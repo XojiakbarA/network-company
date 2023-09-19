@@ -12,6 +12,9 @@ public class Tariff {
     private Long id;
 
     @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
     private ClientType type;
 
     @Column(nullable = false)
