@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import uz.pdp.networkcompany.entity.enums.ClientType;
 
+import java.util.Set;
+
 @Data
 @Entity(name = "tariffs")
 public class Tariff {
@@ -41,6 +43,6 @@ public class Tariff {
     @Column(nullable = false)
     private Float perSMSPrice;
 
-    @OneToOne(mappedBy = "tariff")
-    private SIMCard simCard;
+    @OneToMany(mappedBy = "tariff", cascade = CascadeType.REMOVE)
+    private Set<SIMCard> simCards;
 }

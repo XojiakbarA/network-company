@@ -17,20 +17,20 @@ public class SIMCard {
     private Float balance = 0F;
 
     @Column(nullable = false)
-    private Integer minuteLimit;
+    private Integer minuteLimit = 0;
 
     @Column(nullable = false)
-    private Integer mbLimit;
+    private Integer mbLimit = 0;
 
     @Column(nullable = false)
-    private Integer smsLimit;
+    private Integer smsLimit = 0;
 
     @Column(nullable = false)
     private Boolean active = false;
 
-    @OneToOne
+    @OneToOne(optional = false)
     private Passport passport;
 
-    @OneToOne
+    @ManyToOne
     private Tariff tariff;
 }
