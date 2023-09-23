@@ -1,12 +1,8 @@
 package uz.pdp.networkcompany.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import uz.pdp.networkcompany.entity.User;
-
-import java.util.Optional;
+import uz.pdp.networkcompany.entity.Employee;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByUsername(String username);
+public interface EmployeeRepository extends UserRepository<Employee, Long> {
 }

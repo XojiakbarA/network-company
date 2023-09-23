@@ -1,19 +1,19 @@
 package uz.pdp.networkcompany.mapper;
 
 import org.springframework.stereotype.Component;
-import uz.pdp.networkcompany.dto.view.user.UserView;
-import uz.pdp.networkcompany.entity.User;
+import uz.pdp.networkcompany.dto.view.employee.EmployeeView;
+import uz.pdp.networkcompany.entity.Employee;
 
 @Component
-public class UserMapper {
-    public UserView mapToUserView(User user) {
-        if (user == null) return null;
-        return UserView.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .username(user.getUsername())
-                .type(user.getType())
+public class EmployeeMapper {
+    public EmployeeView mapToEmployeeView(Employee employee) {
+        if (employee == null) return null;
+        return EmployeeView.builder()
+                .id(employee.getId())
+                .firstName(employee.getFirstName())
+                .lastName(employee.getLastName())
+                .username(employee.getUsername())
+                .type(employee.getType())
                 .build();
     }
 }

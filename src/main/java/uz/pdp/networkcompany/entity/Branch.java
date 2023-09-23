@@ -20,5 +20,5 @@ public class Branch {
     private Address address;
 
     @OneToOne(optional = false)
-    private User leader;
+    private Employee leader;
 }

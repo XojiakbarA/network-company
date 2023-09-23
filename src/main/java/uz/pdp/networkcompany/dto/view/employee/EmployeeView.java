@@ -1,15 +1,15 @@
-package uz.pdp.networkcompany.dto.view.user;
+package uz.pdp.networkcompany.dto.view.employee;
 
 import lombok.Builder;
 import lombok.Data;
-import uz.pdp.networkcompany.entity.enums.UserType;
+import uz.pdp.networkcompany.entity.enums.EmployeeType;
 
 @Data
 @Builder
-public class UserView {
+public class EmployeeView {
     private Long id;
     private String firstName;
     private String lastName;
     private String username;
-    private UserType type;
+    private EmployeeType type;
 }

@@ -6,7 +6,7 @@ import uz.pdp.networkcompany.dto.view.branch.BranchView;
 import uz.pdp.networkcompany.dto.view.branch.UserView;
 import uz.pdp.networkcompany.entity.Address;
 import uz.pdp.networkcompany.entity.Branch;
-import uz.pdp.networkcompany.entity.User;
+import uz.pdp.networkcompany.entity.Employee;
 
 @Component
 public class BranchMapper {
@@ -17,7 +17,7 @@ public class BranchMapper {
                 .name(branch.getName())
                 .phoneNumber(branch.getPhoneNumber())
                 .address(mapToAddressView(branch.getAddress()))
-                .leader(mapToUserView(branch.getLeader()))
+                .leader(mapToEmployeeView(branch.getLeader()))
                 .build();
     }
     private AddressView mapToAddressView(Address address) {
@@ -30,12 +30,12 @@ public class BranchMapper {
                 .home(address.getHome())
                 .build();
     }
-    private UserView mapToUserView(User user) {
-        if (user == null) return null;
+    private UserView mapToEmployeeView(Employee employee) {
+        if (employee == null) return null;
         return UserView.builder()
-                .id(user.getId())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
+                .id(employee.getId())
+                .firstName(employee.getFirstName())
+                .lastName(employee.getLastName())
                 .build();
     }
 }
