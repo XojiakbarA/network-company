@@ -13,7 +13,7 @@ public class Tariff {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
 
     @Column(nullable = false)
@@ -43,6 +43,6 @@ public class Tariff {
     @Column(nullable = false)
     private Float perSMSPrice;
 
-    @OneToMany(mappedBy = "tariff", cascade = CascadeType.REMOVE)
+    @OneToMany(mappedBy = "tariff")
     private Set<SIMCard> simCards;
 }
