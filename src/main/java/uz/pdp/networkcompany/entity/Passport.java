@@ -24,7 +24,7 @@ public class Passport {
     @Column(nullable = false)
     private Date dateOfExpiration;
 
-    @OneToOne(optional = false)
+    @OneToOne(mappedBy = "passport")
     private Client client;
 
     @OneToOne(mappedBy = "passport")

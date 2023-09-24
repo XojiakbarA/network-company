@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import uz.pdp.networkcompany.dto.request.BranchRequest;
-import uz.pdp.networkcompany.dto.request.LeaderRequest;
+import uz.pdp.networkcompany.dto.request.SetLeaderRequest;
 import uz.pdp.networkcompany.dto.response.Response;
 import uz.pdp.networkcompany.dto.view.branch.BranchView;
 import uz.pdp.networkcompany.marker.OnCreate;
@@ -89,7 +89,7 @@ public class BranchController {
             "T(uz.pdp.networkcompany.enums.AuthorityType).SET_BRANCH_LEADER)")
     @PutMapping("/{id}/leader")
     @ResponseStatus(HttpStatus.OK)
-    public Response setLeader(@Valid @RequestBody LeaderRequest request, @PathVariable Long id) {
+    public Response setLeader(@Valid @RequestBody SetLeaderRequest request, @PathVariable Long id) {
         BranchView branch = branchService.setLeader(request, id);
 
         return new Response(HttpStatus.OK.name(), branch);

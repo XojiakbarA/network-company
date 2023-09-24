@@ -7,7 +7,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import uz.pdp.networkcompany.dto.request.BranchRequest;
-import uz.pdp.networkcompany.dto.request.LeaderRequest;
+import uz.pdp.networkcompany.dto.request.SetLeaderRequest;
 import uz.pdp.networkcompany.dto.view.branch.BranchView;
 import uz.pdp.networkcompany.entity.Branch;
 import uz.pdp.networkcompany.entity.Employee;
@@ -61,7 +61,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public BranchView setLeader(LeaderRequest request, Long id) {
+    public BranchView setLeader(SetLeaderRequest request, Long id) {
         Branch branch = findById(id);
 
         Employee employee = employeeService.findByIdAndType(request.getLeaderId(), EmployeeType.BRANCH_LEADER);

@@ -33,4 +33,8 @@ public class SIMCard {
 
     @ManyToOne
     private Tariff tariff;
+
+    public Boolean getHasClient() {
+        return this.passport != null;
+    }
 }

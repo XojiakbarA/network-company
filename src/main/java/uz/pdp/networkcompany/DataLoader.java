@@ -6,23 +6,28 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import uz.pdp.networkcompany.entity.Client;
 import uz.pdp.networkcompany.entity.Employee;
+import uz.pdp.networkcompany.entity.Passport;
 import uz.pdp.networkcompany.enums.ClientType;
 import uz.pdp.networkcompany.enums.EmployeeType;
-import uz.pdp.networkcompany.repository.ClientRepository;
-import uz.pdp.networkcompany.repository.EmployeeRepository;
+import uz.pdp.networkcompany.service.ClientService;
+import uz.pdp.networkcompany.service.EmployeeService;
+
+import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class DataLoader implements CommandLineRunner {
     @Autowired
-    private EmployeeRepository employeeRepository;
+    private EmployeeService employeeService;
     @Autowired
-    private ClientRepository clientRepository;
+    private ClientService clientService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
         createEmployee(EmployeeType.DIRECTOR);
+        createEmployee(EmployeeType.SIM_CARD_MANAGER);
         createEmployee(EmployeeType.TARIFF_MANAGER);
         createEmployee(EmployeeType.BRANCH_MANAGER);
         createEmployee(EmployeeType.BRANCH_LEADER);
@@ -38,7 +43,7 @@ public class DataLoader implements CommandLineRunner {
         employee.setUsername(type.name());
         employee.setPassword(passwordEncoder.encode("123"));
         employee.setType(type);
-        employeeRepository.save(employee);
+        employeeService.save(employee);
     }
     private void createClient(ClientType type) {
         Client client = new Client();
@@ -47,6 +52,12 @@ public class DataLoader implements CommandLineRunner {
         client.setUsername(type.name());
         client.setPassword(passwordEncoder.encode("123"));
         client.setType(type);
-        clientRepository.save(client);
+        Passport passport = new Passport();
+        passport.setNumber(UUID.randomUUID().toString());
+        passport.setDateOfBirth(new Date());
+        passport.setDateOfIssue(new Date());
+        passport.setDateOfExpiration(new Date());
+        client.setPassport(passport);
+        clientService.save(client);
     }
 }
