@@ -28,7 +28,7 @@ public class SIMCard {
     @Column(nullable = false)
     private Boolean active = false;
 
-    @OneToOne(optional = false)
+    @OneToOne
     private Passport passport;
 
     @ManyToOne
