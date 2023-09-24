@@ -10,4 +10,6 @@ import java.util.Optional;
 @NoRepositoryBean
 public interface UserRepository<T extends UserDetails, ID extends Serializable> extends JpaRepository<T, ID> {
     Optional<T> findByUsername(String username);
+    boolean existsByUsername(String username);
+    boolean existsByUsernameAndIdNot(String username, Long id);
 }

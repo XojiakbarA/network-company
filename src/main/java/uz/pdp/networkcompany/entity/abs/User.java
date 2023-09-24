@@ -1,4 +1,4 @@
-package uz.pdp.networkcompany.entity;
+package uz.pdp.networkcompany.entity.abs;
 
 import jakarta.persistence.*;
 import lombok.Data;

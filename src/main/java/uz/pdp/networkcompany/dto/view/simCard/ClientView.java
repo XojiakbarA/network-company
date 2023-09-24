@@ -2,7 +2,7 @@ package uz.pdp.networkcompany.dto.view.simCard;
 
 import lombok.Builder;
 import lombok.Data;
-import uz.pdp.networkcompany.entity.enums.ClientType;
+import uz.pdp.networkcompany.enums.ClientType;
 
 @Data
 @Builder

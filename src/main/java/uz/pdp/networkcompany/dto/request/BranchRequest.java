@@ -9,7 +9,7 @@ import uz.pdp.networkcompany.marker.OnCreate;
 @Data
 public class BranchRequest {
     @NotNull(message = "name must not be null", groups = OnCreate.class)
-    @NotBlank(message = "name must not be blank")
+    @NotBlank(message = "name must not be blank", groups = OnCreate.class)
     @Length(min = 3, max = 50, message = "name's length must be in 3 and 50")
     private String name;
 

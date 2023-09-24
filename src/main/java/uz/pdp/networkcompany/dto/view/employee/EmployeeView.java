@@ -2,7 +2,7 @@ package uz.pdp.networkcompany.dto.view.employee;
 
 import lombok.Builder;
 import lombok.Data;
-import uz.pdp.networkcompany.entity.enums.EmployeeType;
+import uz.pdp.networkcompany.enums.EmployeeType;
 
 @Data
 @Builder

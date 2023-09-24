@@ -2,7 +2,7 @@ package uz.pdp.networkcompany.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import uz.pdp.networkcompany.entity.enums.ClientType;
+import uz.pdp.networkcompany.enums.ClientType;
 
 import java.util.Set;
 

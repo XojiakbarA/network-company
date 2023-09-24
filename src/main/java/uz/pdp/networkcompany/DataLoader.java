@@ -6,8 +6,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import uz.pdp.networkcompany.entity.Client;
 import uz.pdp.networkcompany.entity.Employee;
-import uz.pdp.networkcompany.entity.enums.ClientType;
-import uz.pdp.networkcompany.entity.enums.EmployeeType;
+import uz.pdp.networkcompany.enums.ClientType;
+import uz.pdp.networkcompany.enums.EmployeeType;
 import uz.pdp.networkcompany.repository.ClientRepository;
 import uz.pdp.networkcompany.repository.EmployeeRepository;
 

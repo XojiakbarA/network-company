@@ -4,10 +4,10 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.security.core.GrantedAuthority;
-import uz.pdp.networkcompany.entity.enums.ClientType;
+import uz.pdp.networkcompany.entity.abs.User;
+import uz.pdp.networkcompany.enums.ClientType;
 
 import java.util.Collection;
-import java.util.Collections;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -21,6 +21,6 @@ public class Client extends User {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(type);
+        return type.getAuthorities();
     }
 }

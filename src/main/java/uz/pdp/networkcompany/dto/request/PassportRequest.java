@@ -13,16 +13,16 @@ import java.util.Date;
 @Data
 public class PassportRequest {
     @NotNull(message = "number must not be null", groups = OnCreate.class)
-    @NotBlank(message = "number must not be blank")
+    @NotBlank(message = "number must not be blank", groups = OnCreate.class)
     @Length(min = 3, max = 50, message = "number's length must be in 3 and 50")
     private String number;
 
     @NotNull(message = "dateOfBirth must not be null", groups = OnCreate.class)
-    @IsPast(message = "dateOfBirth must be past")
+    @IsPast(message = "dateOfBirth must be past", groups = OnCreate.class)
     private Date dateOfBirth;
 
     @NotNull(message = "dateOfIssue must not be null", groups = OnCreate.class)
-    @IsPast(message = "dateOfIssue must be past")
+    @IsPast(message = "dateOfIssue must be past", groups = OnCreate.class)
     private Date dateOfIssue;
 
     @NotNull(message = "dateOfExpiration must not be null", groups = OnCreate.class)
