@@ -16,7 +16,7 @@ public class Branch {
     @Column(nullable = false)
     private Long phoneNumber;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     private Address address;
 
     @OneToOne

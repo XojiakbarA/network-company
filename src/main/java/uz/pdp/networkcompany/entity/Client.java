@@ -16,7 +16,7 @@ public class Client extends User {
     @Column(nullable = false)
     private ClientType type;
 
-    @OneToOne(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
     private Passport passport;
 
     @Override

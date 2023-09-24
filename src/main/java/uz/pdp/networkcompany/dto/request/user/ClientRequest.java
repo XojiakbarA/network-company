@@ -19,5 +19,6 @@ public class ClientRequest extends UserRequest {
     private String type;
 
     @Valid
+    @NotNull(message = "passport must not be null", groups = OnCreate.class)
     private PassportRequest passport;
 }
