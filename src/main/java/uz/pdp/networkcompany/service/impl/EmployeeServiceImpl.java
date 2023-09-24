@@ -26,8 +26,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     private EmployeeMapper employeeMapper;
     @Autowired
     private AuthService authService;
-    private final String existsByUsername = "User with username = %s already exists";
-    private final String notFoundById = "User with id = %d not found";
+    private final String existsByUsername = "Employee with username = %s already exists";
+    private final String notFoundById = "Employee with id = %d not found";
+    private final String accessDenied = "Access Denied";
 
     @Override
     public Page<EmployeeView> getAll(Pageable pageable) {
@@ -82,6 +83,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public Employee findByIdAndType(Long id, EmployeeType type) {
+        return employeeRepository.findByIdAndType(id, type).orElseThrow(
+                () -> new EntityNotFoundException(String.format(notFoundById, id))
+        );
+    }
+
+    @Override
     public void deleteById(Long id) {
         Employee employee = findById(id);
         if (employee.getType() != null) {
@@ -99,19 +107,19 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
     private void preAuthorizeManager() {
         if (!authService.hasAnyAuthority(CRUD_ALL, CRUD_MANAGER, CREATE_MANAGER)) {
-            throw new AccessDeniedException("You can't do an operation with the manager/director");
+            throw new AccessDeniedException(accessDenied);
         }
     }
 
     private void preAuthorizeBranchLeader() {
         if (!authService.hasAnyAuthority(CRUD_ALL, CRUD_BRANCH_LEADER, CREATE_BRANCH_LEADER)) {
-            throw new AccessDeniedException("You can't do an operation with the branch leader");
+            throw new AccessDeniedException(accessDenied);
         }
     }
 
     private void preAuthorizeWorker() {
         if (!authService.hasAnyAuthority(CRUD_ALL, CRUD_WORKER, CREATE_WORKER)) {
-            throw new AccessDeniedException("You can't do an operation with the worker");
+            throw new AccessDeniedException(accessDenied);
         }
     }
 }

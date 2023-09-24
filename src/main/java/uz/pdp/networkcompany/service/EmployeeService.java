@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable;
 import uz.pdp.networkcompany.dto.request.user.EmployeeRequest;
 import uz.pdp.networkcompany.dto.view.employee.EmployeeView;
 import uz.pdp.networkcompany.entity.Employee;
+import uz.pdp.networkcompany.enums.EmployeeType;
 
 public interface EmployeeService {
     Page<EmployeeView> getAll(Pageable pageable);
@@ -18,6 +19,8 @@ public interface EmployeeService {
     Employee save(Employee employee);
 
     Employee findById(Long id);
+
+    Employee findByIdAndType(Long id, EmployeeType type);
 
     void deleteById(Long id);
 }

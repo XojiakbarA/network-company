@@ -6,4 +6,6 @@ import uz.pdp.networkcompany.entity.Branch;
 
 @Repository
 public interface BranchRepository extends JpaRepository<Branch, Long> {
+    boolean existsByName(String name);
+    boolean existsByNameAndIdNot(String name, Long id);
 }

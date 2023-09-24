@@ -4,14 +4,16 @@ import lombok.Getter;
 
 import java.util.Set;
 
+import static uz.pdp.networkcompany.enums.AuthorityType.*;
+
 @Getter
 public enum EmployeeType {
-    DIRECTOR(Set.of(AuthorityType.CRUD_ALL)),
-    TARIFF_MANAGER(Set.of(AuthorityType.CRUD_TARIFF)),
-    SIM_CARD_MANAGER(Set.of(AuthorityType.CRUD_SIM_CARD)),
-    BRANCH_MANAGER(Set.of(AuthorityType.CRUD_BRANCH_LEADER, AuthorityType.CRUD_BRANCH, AuthorityType.CRUD_WORKER)),
-    BRANCH_LEADER(Set.of(AuthorityType.CRUD_BRANCH, AuthorityType.CRUD_WORKER)),
-    WORKER(Set.of(AuthorityType.CRUD_CLIENT, AuthorityType.CRUD_PASSPORT));
+    DIRECTOR(Set.of(CRUD_ALL)),
+    TARIFF_MANAGER(Set.of(CRUD_TARIFF)),
+    SIM_CARD_MANAGER(Set.of(CRUD_SIM_CARD)),
+    BRANCH_MANAGER(Set.of(CRUD_BRANCH_LEADER, CRUD_BRANCH, CRUD_WORKER, SET_BRANCH_LEADER)),
+    BRANCH_LEADER(Set.of(CRUD_BRANCH, CRUD_WORKER)),
+    WORKER(Set.of(CRUD_CLIENT, CRUD_PASSPORT));
 
     private final Set<AuthorityType> authorities;
 
