@@ -23,11 +23,11 @@ public class TariffRequest {
 
     @NotNull(message = "price must not be null", groups = OnCreate.class)
     @Positive(message = "price must be a positive")
-    private Float price;
+    private Double price;
 
     @NotNull(message = "connectionPrice must not be null", groups = OnCreate.class)
     @Positive(message = "connectionPrice must be a positive")
-    private Float connectionPrice;
+    private Double connectionPrice;
 
     @NotNull(message = "perMonthMinuteLimit must not be null", groups = OnCreate.class)
     @Positive(message = "perMonthMinuteLimit must be a positive")
@@ -43,13 +43,13 @@ public class TariffRequest {
 
     @NotNull(message = "perMinutePrice must not be null", groups = OnCreate.class)
     @Positive(message = "perMinutePrice must be a positive")
-    private Float perMinutePrice;
+    private Double perMinutePrice;
 
     @NotNull(message = "perMBPrice must not be null", groups = OnCreate.class)
     @Positive(message = "perMBPrice must be a positive")
-    private Float perMBPrice;
+    private Double perMBPrice;
 
     @NotNull(message = "perSMSPrice must not be null", groups = OnCreate.class)
     @Positive(message = "perSMSPrice must be a positive")
-    private Float perSMSPrice;
+    private Double perSMSPrice;
 }

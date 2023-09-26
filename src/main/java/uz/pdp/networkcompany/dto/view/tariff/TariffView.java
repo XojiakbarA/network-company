@@ -10,12 +10,12 @@ public class TariffView {
     private Long id;
     private String name;
     private ClientType type;
-    private Float price;
-    private Float connectionPrice;
+    private Double price;
+    private Double connectionPrice;
     private Integer perMonthMinuteLimit;
     private Integer perMonthMBLimit;
     private Integer perMonthSMSLimit;
-    private Float perMinutePrice;
-    private Float perMBPrice;
-    private Float perSMSPrice;
+    private Double perMinutePrice;
+    private Double perMBPrice;
+    private Double perSMSPrice;
 }

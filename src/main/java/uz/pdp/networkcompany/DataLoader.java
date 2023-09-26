@@ -7,10 +7,12 @@ import org.springframework.stereotype.Component;
 import uz.pdp.networkcompany.entity.Client;
 import uz.pdp.networkcompany.entity.Employee;
 import uz.pdp.networkcompany.entity.Passport;
+import uz.pdp.networkcompany.entity.Tariff;
 import uz.pdp.networkcompany.enums.ClientType;
 import uz.pdp.networkcompany.enums.EmployeeType;
 import uz.pdp.networkcompany.service.ClientService;
 import uz.pdp.networkcompany.service.EmployeeService;
+import uz.pdp.networkcompany.service.TariffService;
 
 import java.util.Date;
 import java.util.UUID;
@@ -21,6 +23,8 @@ public class DataLoader implements CommandLineRunner {
     private EmployeeService employeeService;
     @Autowired
     private ClientService clientService;
+    @Autowired
+    private TariffService tariffService;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -34,6 +38,10 @@ public class DataLoader implements CommandLineRunner {
         createEmployee(EmployeeType.WORKER);
         createClient(ClientType.PHYSICAL);
         createClient(ClientType.LEGAL);
+        createTariff("Tariff 1", ClientType.PHYSICAL, 50_000D, 2000D,
+                500, 4096, 100, 80D, 80D, 80D);
+        createTariff("Tariff 2", ClientType.LEGAL, 30_000D, 2000D,
+                300, 2048, 80, 80D, 80D, 80D);
     }
 
     private void createEmployee(EmployeeType type) {
@@ -59,5 +67,22 @@ public class DataLoader implements CommandLineRunner {
         passport.setDateOfExpiration(new Date());
         client.setPassport(passport);
         clientService.save(client);
+    }
+
+    private void createTariff(String name, ClientType type, Double price, Double connectionPrice,
+                              Integer minuteLimit, Integer mbLimit, Integer smsLimit,
+                              Double minutePrice, Double mbPrice, Double smsPrice) {
+        Tariff tariff = new Tariff();
+        tariff.setName(name);
+        tariff.setType(type);
+        tariff.setPrice(price);
+        tariff.setConnectionPrice(connectionPrice);
+        tariff.setPerMonthMinuteLimit(minuteLimit);
+        tariff.setPerMonthMBLimit(mbLimit);
+        tariff.setPerMonthSMSLimit(smsLimit);
+        tariff.setPerMinutePrice(minutePrice);
+        tariff.setPerMBPrice(mbPrice);
+        tariff.setPerSMSPrice(smsPrice);
+        tariffService.save(tariff);
     }
 }

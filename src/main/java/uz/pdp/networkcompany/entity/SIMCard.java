@@ -14,7 +14,7 @@ public class SIMCard {
     private Long number;
 
     @Column(nullable = false)
-    private Float balance = 0F;
+    private Double balance = 0D;
 
     @Column(nullable = false)
     private Integer minuteLimit = 0;

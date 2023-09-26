@@ -20,10 +20,10 @@ public class Tariff {
     private ClientType type;
 
     @Column(nullable = false)
-    private Float price;
+    private Double price;
 
     @Column(nullable = false)
-    private Float connectionPrice;
+    private Double connectionPrice;
 
     @Column(nullable = false)
     private Integer perMonthMinuteLimit;
@@ -35,13 +35,13 @@ public class Tariff {
     private Integer perMonthSMSLimit;
 
     @Column(nullable = false)
-    private Float perMinutePrice;
+    private Double perMinutePrice;
 
     @Column(nullable = false)
-    private Float perMBPrice;
+    private Double perMBPrice;
 
     @Column(nullable = false)
-    private Float perSMSPrice;
+    private Double perSMSPrice;
 
     @OneToMany(mappedBy = "tariff")
     private Set<SIMCard> simCards;

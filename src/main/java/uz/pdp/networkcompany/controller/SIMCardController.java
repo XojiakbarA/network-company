@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import uz.pdp.networkcompany.dto.request.SIMCardRequest;
 import uz.pdp.networkcompany.dto.request.SetPassportRequest;
 import uz.pdp.networkcompany.dto.request.AddAmountRequest;
+import uz.pdp.networkcompany.dto.request.SetTariffRequest;
 import uz.pdp.networkcompany.dto.response.Response;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.service.SIMCardService;
@@ -83,6 +84,18 @@ public class SIMCardController {
     @PreAuthorize("hasAnyAuthority(" +
             "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_ALL," +
             "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_SIM_CARD," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).SET_TARIFF)")
+    @PutMapping("/{id}/tariff")
+    @ResponseStatus(HttpStatus.OK)
+    public Response setTariff(@Valid @RequestBody SetTariffRequest request, @PathVariable Long id) {
+        SIMCardView simCard = simCardService.setTariff(request, id);
+
+        return new Response(HttpStatus.OK.name(), simCard);
+    }
+
+    @PreAuthorize("hasAnyAuthority(" +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_ALL," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_SIM_CARD," +
             "T(uz.pdp.networkcompany.enums.AuthorityType).SET_PASSPORT)")
     @PutMapping("/{id}/passport")
     @ResponseStatus(HttpStatus.OK)
@@ -95,11 +108,11 @@ public class SIMCardController {
     @PreAuthorize("hasAnyAuthority(" +
             "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_ALL," +
             "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_SIM_CARD," +
-            "T(uz.pdp.networkcompany.enums.AuthorityType).ADD_AMOUNT)")
+            "T(uz.pdp.networkcompany.enums.AuthorityType).ADD_BALANCE)")
     @PutMapping("/{id}/balance")
     @ResponseStatus(HttpStatus.OK)
-    public Response addAmount(@Valid @RequestBody AddAmountRequest request, @PathVariable Long id) {
-        SIMCardView simCard = simCardService.addAmount(request, id);
+    public Response addBalance(@Valid @RequestBody AddAmountRequest request, @PathVariable Long id) {
+        SIMCardView simCard = simCardService.addBalance(request, id);
 
         return new Response(HttpStatus.OK.name(), simCard);
     }

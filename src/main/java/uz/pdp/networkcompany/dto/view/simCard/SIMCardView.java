@@ -8,7 +8,7 @@ import lombok.Data;
 public class SIMCardView {
     private Long id;
     private Long number;
-    private Float balance;
+    private Double balance;
     private Integer minuteLimit;
     private Integer mbLimit;
     private Integer smsLimit;
