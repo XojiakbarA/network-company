@@ -1,9 +1,13 @@
 package uz.pdp.networkcompany.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import uz.pdp.networkcompany.enums.ClientType;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -46,4 +50,19 @@ public class Tariff {
 
     @OneToMany(mappedBy = "tariff")
     private Set<SIMCard> simCards;
+
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @ManyToMany(mappedBy = "tariffs")
+    private Set<Package> packages = new HashSet<>();
+
+    public void addPackage(Package pack) {
+        this.packages.add(pack);
+        pack.getTariffs().add(this);
+    }
+    public void removePackage(Package pack) {
+        this.packages.remove(pack);
+        pack.getTariffs().remove(this);
+    }
 }

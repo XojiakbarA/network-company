@@ -40,6 +40,9 @@ public class SIMCard {
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Service> services = new HashSet<>();
 
+    @OneToMany(mappedBy = "simCard", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<TakenPackage> takenPackages = new HashSet<>();
+
     public void addService(Service service) {
         this.services.add(service);
         service.getSimCards().add(this);
@@ -47,6 +50,14 @@ public class SIMCard {
     public void removeService(Service service) {
         this.services.remove(service);
         service.getSimCards().remove(this);
+    }
+
+    public void addTakenPackage(TakenPackage takenPackage) {
+        this.takenPackages.add(takenPackage);
+    }
+
+    public void removeTakenPackage(TakenPackage takenPackage) {
+        this.takenPackages.remove(takenPackage);
     }
 
     public Boolean getHasClient() {

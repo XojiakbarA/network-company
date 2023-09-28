@@ -5,9 +5,8 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import uz.pdp.networkcompany.entity.*;
-import uz.pdp.networkcompany.enums.ClientType;
-import uz.pdp.networkcompany.enums.EmployeeType;
-import uz.pdp.networkcompany.enums.ServiceType;
+import uz.pdp.networkcompany.entity.Package;
+import uz.pdp.networkcompany.enums.*;
 import uz.pdp.networkcompany.service.*;
 
 import java.util.Date;
@@ -30,6 +29,8 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private ServiceService serviceService;
     @Autowired
+    private PackageService packageService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -39,6 +40,7 @@ public class DataLoader implements CommandLineRunner {
         createEmployee(EmployeeType.TARIFF_MANAGER);
         createEmployee(EmployeeType.BRANCH_MANAGER);
         createEmployee(EmployeeType.SERVICE_MANAGER);
+        createEmployee(EmployeeType.PACKAGE_MANAGER);
         createEmployee(EmployeeType.BRANCH_LEADER);
         createEmployee(EmployeeType.WORKER);
         createClient(ClientType.PHYSICAL);
@@ -51,6 +53,7 @@ public class DataLoader implements CommandLineRunner {
         createService("Service 1", 1900D, ServiceType.DAILY);
         createService("Service 2", 5600D, ServiceType.MONTHLY);
         createSIMCard();
+        createPackage("Package 1", 8000D, 512, PackageType.MB, DurationType.WEEK);
     }
 
     private void createEmployee(EmployeeType type) {
@@ -118,5 +121,15 @@ public class DataLoader implements CommandLineRunner {
         service.setType(type);
         service.setCategory(categoryService.findById(1L));
         serviceService.save(service);
+    }
+
+    private void createPackage(String name, Double price, Integer amount, PackageType type, DurationType durationType) {
+        Package pack = new Package();
+        pack.setName(name);
+        pack.setPrice(price);
+        pack.setAmount(amount);
+        pack.setType(type);
+        pack.setDurationType(durationType);
+        packageService.save(pack);
     }
 }

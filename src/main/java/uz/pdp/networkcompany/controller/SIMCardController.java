@@ -137,4 +137,16 @@ public class SIMCardController {
 
         return new Response(HttpStatus.OK.name());
     }
+
+    @PreAuthorize("hasAnyAuthority(" +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_ALL," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_SIM_CARD," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).ADD_PACKAGE)")
+    @PutMapping("/{id}/packages")
+    @ResponseStatus(HttpStatus.OK)
+    public Response addPackage(@Valid @RequestBody AddPackageRequest request, @PathVariable Long id) {
+        SIMCardView simCard = simCardService.addPackage(request, id);
+
+        return new Response(HttpStatus.OK.name(), simCard);
+    }
 }

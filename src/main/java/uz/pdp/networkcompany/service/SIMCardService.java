@@ -25,6 +25,8 @@ public interface SIMCardService {
 
     void removeService(Long simCardId, Long serviceId);
 
+    SIMCardView addPackage(AddPackageRequest request, Long id);
+
     SIMCard save(SIMCard simCard);
 
     SIMCard findById(Long id);

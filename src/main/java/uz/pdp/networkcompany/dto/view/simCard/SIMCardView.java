@@ -18,4 +18,5 @@ public class SIMCardView {
     private PassportView passport;
     private TariffView tariff;
     private Set<ServiceView> services;
+    private Set<TakenPackageView> takenPackages;
 }

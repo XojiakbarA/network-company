@@ -8,19 +8,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
-import uz.pdp.networkcompany.entity.Passport;
-import uz.pdp.networkcompany.entity.SIMCard;
-import uz.pdp.networkcompany.entity.Service;
-import uz.pdp.networkcompany.entity.Tariff;
+import uz.pdp.networkcompany.entity.*;
+import uz.pdp.networkcompany.entity.Package;
 import uz.pdp.networkcompany.enums.ServiceType;
 import uz.pdp.networkcompany.mapper.SIMCardMapper;
 import uz.pdp.networkcompany.repository.SIMCardRepository;
-import uz.pdp.networkcompany.service.PassportService;
-import uz.pdp.networkcompany.service.SIMCardService;
-import uz.pdp.networkcompany.service.ServiceService;
-import uz.pdp.networkcompany.service.TariffService;
+import uz.pdp.networkcompany.service.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @org.springframework.stereotype.Service
 public class SIMCardServiceImpl implements SIMCardService {
@@ -32,6 +28,8 @@ public class SIMCardServiceImpl implements SIMCardService {
     private TariffService tariffService;
     @Autowired
     private ServiceService serviceService;
+    @Autowired
+    private PackageService packageService;
     @Autowired
     private SIMCardMapper simCardMapper;
     private final String existsByNumber = "SIMCard with number = %s already exists";
@@ -159,6 +157,32 @@ public class SIMCardServiceImpl implements SIMCardService {
         simCard.removeService(service);
 
         save(simCard);
+    }
+
+    @Override
+    public SIMCardView addPackage(AddPackageRequest request, Long id) {
+        SIMCard simCard = findById(id);
+        Package pack = packageService.findById(request.getPackageId());
+
+        if (!simCard.getHasClient()) {
+            throw new EntityActionVetoException(String.format(noHolderById, id), null);
+        }
+        if (simCard.getBalance() < pack.getPrice()) {
+            throw new EntityActionVetoException(String.format(notEnoughBalanceById, id, pack.getPrice()), null);
+        }
+
+        TakenPackage takenPackage = new TakenPackage();
+
+        takenPackage.setSimCard(simCard);
+        takenPackage.setPack(pack);
+        takenPackage.setAmount(pack.getAmount());
+        LocalDateTime expirationDate = LocalDateTime.now().plusDays(pack.getDurationType().getValue());
+        takenPackage.setExpirationDate(expirationDate);
+
+        simCard.setBalance(simCard.getBalance() - pack.getPrice());
+        simCard.addTakenPackage(takenPackage);
+
+        return simCardMapper.mapToSIMCardView(save(simCard));
     }
 
     @Override

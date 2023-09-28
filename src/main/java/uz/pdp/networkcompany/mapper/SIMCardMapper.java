@@ -1,11 +1,7 @@
 package uz.pdp.networkcompany.mapper;
 
 import org.springframework.stereotype.Component;
-import uz.pdp.networkcompany.dto.view.simCard.ServiceView;
-import uz.pdp.networkcompany.dto.view.simCard.ClientView;
-import uz.pdp.networkcompany.dto.view.simCard.PassportView;
-import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
-import uz.pdp.networkcompany.dto.view.simCard.TariffView;
+import uz.pdp.networkcompany.dto.view.simCard.*;
 import uz.pdp.networkcompany.entity.*;
 
 import java.util.stream.Collectors;
@@ -25,6 +21,7 @@ public class SIMCardMapper {
                 .passport(mapToPassportView(simCard.getPassport()))
                 .tariff(mapToTariffView(simCard.getTariff()))
                 .services(simCard.getServices().stream().map(this::mapToServiceView).collect(Collectors.toSet()))
+                .takenPackages(simCard.getTakenPackages().stream().map(this::mapToTakenPackageView).collect(Collectors.toSet()))
                 .build();
     }
     private PassportView mapToPassportView(Passport passport) {
@@ -59,6 +56,15 @@ public class SIMCardMapper {
                 .name(service.getName())
                 .type(service.getType())
                 .price(service.getPrice())
+                .build();
+    }
+    private TakenPackageView mapToTakenPackageView(TakenPackage takenPackage) {
+        if (takenPackage == null) return null;
+        return TakenPackageView.builder()
+                .id(takenPackage.getId())
+                .type(takenPackage.getPack().getType())
+                .amount(takenPackage.getAmount())
+                .expirationDate(takenPackage.getExpirationDate())
                 .build();
     }
 }
