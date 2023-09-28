@@ -7,10 +7,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.networkcompany.dto.request.SIMCardRequest;
-import uz.pdp.networkcompany.dto.request.SetPassportRequest;
-import uz.pdp.networkcompany.dto.request.AddAmountRequest;
-import uz.pdp.networkcompany.dto.request.SetTariffRequest;
+import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.response.Response;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.service.SIMCardService;
@@ -115,5 +112,29 @@ public class SIMCardController {
         SIMCardView simCard = simCardService.addBalance(request, id);
 
         return new Response(HttpStatus.OK.name(), simCard);
+    }
+
+    @PreAuthorize("hasAnyAuthority(" +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_ALL," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_SIM_CARD," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).ADD_SERVICE)")
+    @PutMapping("/{id}/services")
+    @ResponseStatus(HttpStatus.OK)
+    public Response addService(@Valid @RequestBody AddServiceRequest request, @PathVariable Long id) {
+        SIMCardView simCard = simCardService.addService(request, id);
+
+        return new Response(HttpStatus.OK.name(), simCard);
+    }
+
+    @PreAuthorize("hasAnyAuthority(" +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_ALL," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).CRUD_SIM_CARD," +
+            "T(uz.pdp.networkcompany.enums.AuthorityType).REMOVE_SERVICE)")
+    @DeleteMapping("/{simCardId}/services/{serviceId}")
+    @ResponseStatus(HttpStatus.OK)
+    public Response removeService(@PathVariable Long simCardId, @PathVariable Long serviceId) {
+        simCardService.removeService(simCardId, serviceId);
+
+        return new Response(HttpStatus.OK.name());
     }
 }

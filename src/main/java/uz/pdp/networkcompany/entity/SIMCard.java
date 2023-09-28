@@ -3,6 +3,9 @@ package uz.pdp.networkcompany.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @Entity(name = "sim_cards")
 public class SIMCard {
@@ -33,6 +36,18 @@ public class SIMCard {
 
     @ManyToOne
     private Tariff tariff;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<Service> services = new HashSet<>();
+
+    public void addService(Service service) {
+        this.services.add(service);
+        service.getSimCards().add(this);
+    }
+    public void removeService(Service service) {
+        this.services.remove(service);
+        service.getSimCards().remove(this);
+    }
 
     public Boolean getHasClient() {
         return this.passport != null;

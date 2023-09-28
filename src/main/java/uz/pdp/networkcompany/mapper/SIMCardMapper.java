@@ -1,14 +1,14 @@
 package uz.pdp.networkcompany.mapper;
 
 import org.springframework.stereotype.Component;
+import uz.pdp.networkcompany.dto.view.simCard.ServiceView;
 import uz.pdp.networkcompany.dto.view.simCard.ClientView;
 import uz.pdp.networkcompany.dto.view.simCard.PassportView;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.dto.view.simCard.TariffView;
-import uz.pdp.networkcompany.entity.Client;
-import uz.pdp.networkcompany.entity.Passport;
-import uz.pdp.networkcompany.entity.SIMCard;
-import uz.pdp.networkcompany.entity.Tariff;
+import uz.pdp.networkcompany.entity.*;
+
+import java.util.stream.Collectors;
 
 @Component
 public class SIMCardMapper {
@@ -24,6 +24,7 @@ public class SIMCardMapper {
                 .active(simCard.getActive())
                 .passport(mapToPassportView(simCard.getPassport()))
                 .tariff(mapToTariffView(simCard.getTariff()))
+                .services(simCard.getServices().stream().map(this::mapToServiceView).collect(Collectors.toSet()))
                 .build();
     }
     private PassportView mapToPassportView(Passport passport) {
@@ -49,6 +50,15 @@ public class SIMCardMapper {
                 .id(tariff.getId())
                 .name(tariff.getName())
                 .type(tariff.getType())
+                .build();
+    }
+    private ServiceView mapToServiceView(Service service) {
+        if (service == null) return null;
+        return ServiceView.builder()
+                .id(service.getId())
+                .name(service.getName())
+                .type(service.getType())
+                .price(service.getPrice())
                 .build();
     }
 }

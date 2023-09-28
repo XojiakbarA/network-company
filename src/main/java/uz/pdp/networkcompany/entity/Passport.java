@@ -1,7 +1,10 @@
 package uz.pdp.networkcompany.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.util.Date;
 
@@ -24,9 +27,15 @@ public class Passport {
     @Column(nullable = false)
     private Date dateOfExpiration;
 
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToOne(mappedBy = "passport")
     private Client client;
 
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToOne(mappedBy = "passport")
     private SIMCard simCard;
 }

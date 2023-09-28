@@ -6,24 +6,23 @@ import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import uz.pdp.networkcompany.dto.request.AddAmountRequest;
-import uz.pdp.networkcompany.dto.request.SIMCardRequest;
-import uz.pdp.networkcompany.dto.request.SetPassportRequest;
-import uz.pdp.networkcompany.dto.request.SetTariffRequest;
+import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.entity.Passport;
 import uz.pdp.networkcompany.entity.SIMCard;
+import uz.pdp.networkcompany.entity.Service;
 import uz.pdp.networkcompany.entity.Tariff;
+import uz.pdp.networkcompany.enums.ServiceType;
 import uz.pdp.networkcompany.mapper.SIMCardMapper;
 import uz.pdp.networkcompany.repository.SIMCardRepository;
 import uz.pdp.networkcompany.service.PassportService;
 import uz.pdp.networkcompany.service.SIMCardService;
+import uz.pdp.networkcompany.service.ServiceService;
 import uz.pdp.networkcompany.service.TariffService;
 
 import java.time.LocalDate;
 
-@Service
+@org.springframework.stereotype.Service
 public class SIMCardServiceImpl implements SIMCardService {
     @Autowired
     private SIMCardRepository simCardRepository;
@@ -31,6 +30,8 @@ public class SIMCardServiceImpl implements SIMCardService {
     private PassportService passportService;
     @Autowired
     private TariffService tariffService;
+    @Autowired
+    private ServiceService serviceService;
     @Autowired
     private SIMCardMapper simCardMapper;
     private final String existsByNumber = "SIMCard with number = %s already exists";
@@ -129,6 +130,38 @@ public class SIMCardServiceImpl implements SIMCardService {
     }
 
     @Override
+    public SIMCardView addService(AddServiceRequest request, Long id) {
+        SIMCard simCard = findById(id);
+        Service service = serviceService.findById(request.getServiceId());
+
+        if (!simCard.getHasClient()) {
+            throw new EntityActionVetoException(String.format(noHolderById, id), null);
+        }
+        double price = service.getPrice();
+        if (service.getType().equals(ServiceType.MONTHLY)) {
+            price = calcPriceForCurrentMonth(price);
+        }
+        if (simCard.getBalance() < price) {
+            throw new EntityActionVetoException(String.format(notEnoughBalanceById, id, price), null);
+        }
+
+        simCard.setBalance(simCard.getBalance() - price);
+        simCard.addService(service);
+
+        return simCardMapper.mapToSIMCardView(save(simCard));
+    }
+
+    @Override
+    public void removeService(Long simCardId, Long serviceId) {
+        SIMCard simCard = findById(simCardId);
+        Service service = serviceService.findById(serviceId);
+
+        simCard.removeService(service);
+
+        save(simCard);
+    }
+
+    @Override
     public SIMCard save(SIMCard simCard) {
         return simCardRepository.save(simCard);
     }
@@ -142,17 +175,18 @@ public class SIMCardServiceImpl implements SIMCardService {
 
     @Override
     public void deleteById(Long id) {
-        if (!simCardRepository.existsById(id)) {
-            throw new EntityNotFoundException(String.format(notFoundById, id));
+        SIMCard simCard = findById(id);
+        for (Service service : simCard.getServices()) {
+            simCard.removeService(service);
         }
         simCardRepository.deleteById(id);
     }
 
-    private Double calcPriceForCurrentMonth(Double tariffPrice) {
+    private Double calcPriceForCurrentMonth(Double price) {
         LocalDate date = LocalDate.now();
         int lengthOfMonth = date.getMonth().length(date.isLeapYear());
         int remainingDays = lengthOfMonth - date.getDayOfMonth();
-        double perDayPrice = tariffPrice / lengthOfMonth;
+        double perDayPrice = price / lengthOfMonth;
 
         return perDayPrice * remainingDays;
     }

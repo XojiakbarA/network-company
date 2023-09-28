@@ -14,6 +14,7 @@ import java.util.Collection;
 @Entity(name = "employees")
 public class Employee extends User {
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private EmployeeType type;
 
     @OneToOne(mappedBy = "leader", cascade = CascadeType.REMOVE)

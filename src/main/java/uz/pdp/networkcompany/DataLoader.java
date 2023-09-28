@@ -4,15 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import uz.pdp.networkcompany.entity.Client;
-import uz.pdp.networkcompany.entity.Employee;
-import uz.pdp.networkcompany.entity.Passport;
-import uz.pdp.networkcompany.entity.Tariff;
+import uz.pdp.networkcompany.entity.*;
 import uz.pdp.networkcompany.enums.ClientType;
 import uz.pdp.networkcompany.enums.EmployeeType;
-import uz.pdp.networkcompany.service.ClientService;
-import uz.pdp.networkcompany.service.EmployeeService;
-import uz.pdp.networkcompany.service.TariffService;
+import uz.pdp.networkcompany.enums.ServiceType;
+import uz.pdp.networkcompany.service.*;
 
 import java.util.Date;
 import java.util.UUID;
@@ -26,6 +22,14 @@ public class DataLoader implements CommandLineRunner {
     @Autowired
     private TariffService tariffService;
     @Autowired
+    private SIMCardService simCardService;
+    @Autowired
+    private PassportService passportService;
+    @Autowired
+    private CategoryService categoryService;
+    @Autowired
+    private ServiceService serviceService;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Override
@@ -34,6 +38,7 @@ public class DataLoader implements CommandLineRunner {
         createEmployee(EmployeeType.SIM_CARD_MANAGER);
         createEmployee(EmployeeType.TARIFF_MANAGER);
         createEmployee(EmployeeType.BRANCH_MANAGER);
+        createEmployee(EmployeeType.SERVICE_MANAGER);
         createEmployee(EmployeeType.BRANCH_LEADER);
         createEmployee(EmployeeType.WORKER);
         createClient(ClientType.PHYSICAL);
@@ -42,6 +47,10 @@ public class DataLoader implements CommandLineRunner {
                 500, 4096, 100, 80D, 80D, 80D);
         createTariff("Tariff 2", ClientType.LEGAL, 30_000D, 2000D,
                 300, 2048, 80, 80D, 80D, 80D);
+        createCategory();
+        createService("Service 1", 1900D, ServiceType.DAILY);
+        createService("Service 2", 5600D, ServiceType.MONTHLY);
+        createSIMCard();
     }
 
     private void createEmployee(EmployeeType type) {
@@ -84,5 +93,30 @@ public class DataLoader implements CommandLineRunner {
         tariff.setPerMBPrice(mbPrice);
         tariff.setPerSMSPrice(smsPrice);
         tariffService.save(tariff);
+    }
+
+    private void createSIMCard() {
+        SIMCard simCard = new SIMCard();
+        simCard.setNumber(998951234567L);
+        simCard.setBalance(10_000D);
+        simCard.setActive(true);
+        simCard.setPassport(passportService.findById(1L));
+        simCard.setTariff(tariffService.findById(1L));
+        simCardService.save(simCard);
+    }
+
+    private void createCategory() {
+        Category category = new Category();
+        category.setName("Category 1");
+        categoryService.save(category);
+    }
+
+    private void createService(String name, Double price, ServiceType type) {
+        Service service = new Service();
+        service.setName(name);
+        service.setPrice(price);
+        service.setType(type);
+        service.setCategory(categoryService.findById(1L));
+        serviceService.save(service);
     }
 }

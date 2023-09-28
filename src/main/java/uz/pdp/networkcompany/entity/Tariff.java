@@ -17,6 +17,7 @@ public class Tariff {
     private String name;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClientType type;
 
     @Column(nullable = false)

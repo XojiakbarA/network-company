@@ -14,6 +14,7 @@ import java.util.Collection;
 @Entity(name = "clients")
 public class Client extends User {
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClientType type;
 
     @OneToOne(optional = false, cascade = CascadeType.ALL)

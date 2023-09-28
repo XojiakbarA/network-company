@@ -2,10 +2,7 @@ package uz.pdp.networkcompany.service;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import uz.pdp.networkcompany.dto.request.AddAmountRequest;
-import uz.pdp.networkcompany.dto.request.SIMCardRequest;
-import uz.pdp.networkcompany.dto.request.SetPassportRequest;
-import uz.pdp.networkcompany.dto.request.SetTariffRequest;
+import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.entity.SIMCard;
 
@@ -23,6 +20,10 @@ public interface SIMCardService {
     SIMCardView setPassport(SetPassportRequest request, Long id);
 
     SIMCardView addBalance(AddAmountRequest request, Long id);
+
+    SIMCardView addService(AddServiceRequest request, Long id);
+
+    void removeService(Long simCardId, Long serviceId);
 
     SIMCard save(SIMCard simCard);
 

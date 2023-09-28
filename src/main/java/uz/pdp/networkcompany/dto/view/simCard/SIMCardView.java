@@ -3,6 +3,8 @@ package uz.pdp.networkcompany.dto.view.simCard;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 @Builder
 public class SIMCardView {
@@ -15,4 +17,5 @@ public class SIMCardView {
     private Boolean active;
     private PassportView passport;
     private TariffView tariff;
+    private Set<ServiceView> services;
 }
