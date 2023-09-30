@@ -17,6 +17,8 @@ import uz.pdp.networkcompany.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 
 @org.springframework.stereotype.Service
 public class SIMCardServiceImpl implements SIMCardService {
@@ -34,6 +36,7 @@ public class SIMCardServiceImpl implements SIMCardService {
     private SIMCardMapper simCardMapper;
     private final String existsByNumber = "SIMCard with number = %s already exists";
     private final String notFoundById = "SIMCard with id = %d not found";
+    private final String notFoundByUsername = "SIMCard with username = %s not found";
     private final String alreadyHasClient = "SIMCard with id = %d already has a client";
     private final String noHolderById = "SIMCard with id = %d no holder";
     private final String notEnoughBalanceById = "SIMCard with id = %d not enough balance. Required balance is %f";
@@ -82,15 +85,31 @@ public class SIMCardServiceImpl implements SIMCardService {
         SIMCard simCard = findById(id);
         Tariff tariff = tariffService.findById(request.getTariffId());
 
+        SIMCard saved = setTariff(simCard, tariff);
+
+        return simCardMapper.mapToSIMCardView(saved);
+    }
+
+    @Override
+    public String setTariff(String username, String code) {
+        SIMCard simCard = findByUsername(username);
+        Tariff tariff = tariffService.findByUSSDCode(code);
+
+        setTariff(simCard, tariff);
+
+        return String.format("Tariff - %s set successfully", tariff.getName());
+    }
+
+    private SIMCard setTariff(SIMCard simCard, Tariff tariff) {
         if (!simCard.getHasClient()) {
-            throw new EntityActionVetoException(String.format(noHolderById, id), null);
+            throw new EntityActionVetoException(String.format(noHolderById, simCard.getId()), null);
         }
         if (!simCard.getPassport().getClient().getType().equals(tariff.getType())) {
             throw new EntityActionVetoException(String.format(tariffAndClientTypesNotMatch, tariff.getType()), null);
         }
         Double priceWithConnection = tariff.getConnectionPrice() + calcPriceForCurrentMonth(tariff.getPrice());
         if (simCard.getBalance() < priceWithConnection) {
-            throw new EntityActionVetoException(String.format(notEnoughBalanceById, id, priceWithConnection), null);
+            throw new EntityActionVetoException(String.format(notEnoughBalanceById, simCard.getId(), priceWithConnection), null);
         }
 
         simCard.setBalance(simCard.getBalance() - priceWithConnection);
@@ -100,7 +119,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         simCard.setActive(true);
         simCard.setTariff(tariff);
 
-        return simCardMapper.mapToSIMCardView(save(simCard));
+        return save(simCard);
     }
 
     @Override
@@ -122,9 +141,24 @@ public class SIMCardServiceImpl implements SIMCardService {
     public SIMCardView addBalance(AddAmountRequest request, Long id) {
         SIMCard simCard = findById(id);
 
-        simCard.setBalance(simCard.getBalance() + request.getAmount());
+        SIMCard saved = addBalance(simCard, request.getAmount());
 
-        return simCardMapper.mapToSIMCardView(save(simCard));
+        return simCardMapper.mapToSIMCardView(saved);
+    }
+
+    @Override
+    public String addBalance(AddAmountRequest request, String username) {
+        SIMCard simCard = findByUsername(username);
+
+        SIMCard saved = addBalance(simCard, request.getAmount());
+
+        return String.format("Amount added successfully to balance. Current balance - %f", saved.getBalance());
+    }
+
+    private SIMCard addBalance(SIMCard simCard, Double amount) {
+        simCard.setBalance(simCard.getBalance() + amount);
+
+        return save(simCard);
     }
 
     @Override
@@ -132,21 +166,62 @@ public class SIMCardServiceImpl implements SIMCardService {
         SIMCard simCard = findById(id);
         Service service = serviceService.findById(request.getServiceId());
 
+        SIMCard saved = addService(simCard, service);
+
+        return simCardMapper.mapToSIMCardView(saved);
+    }
+
+    @Override
+    public String addService(String username, String code) {
+        SIMCard simCard = findByUsername(username);
+        Service service = serviceService.findByUSSDCode(code);
+
+        addService(simCard, service);
+
+        return String.format("Service - %s added successfully", service.getName());
+    }
+
+    private SIMCard addService(SIMCard simCard, Service service) {
         if (!simCard.getHasClient()) {
-            throw new EntityActionVetoException(String.format(noHolderById, id), null);
+            throw new EntityActionVetoException(String.format(noHolderById, simCard.getId()), null);
         }
         double price = service.getPrice();
         if (service.getType().equals(ServiceType.MONTHLY)) {
             price = calcPriceForCurrentMonth(price);
         }
         if (simCard.getBalance() < price) {
-            throw new EntityActionVetoException(String.format(notEnoughBalanceById, id, price), null);
+            throw new EntityActionVetoException(String.format(notEnoughBalanceById, simCard.getId(), price), null);
         }
 
         simCard.setBalance(simCard.getBalance() - price);
         simCard.addService(service);
 
-        return simCardMapper.mapToSIMCardView(save(simCard));
+        return save(simCard);
+    }
+
+    private Double calcPriceForCurrentMonth(Double price) {
+        LocalDate date = LocalDate.now();
+        int lengthOfMonth = date.getMonth().length(date.isLeapYear());
+        int remainingDays = lengthOfMonth - date.getDayOfMonth();
+        double perDayPrice = price / lengthOfMonth;
+
+        if (remainingDays == 0) {
+            remainingDays = 1;
+        }
+
+        return perDayPrice * remainingDays;
+    }
+    private Integer calcLimitForCurrentMonth(Integer limit) {
+        LocalDate date = LocalDate.now();
+        int lengthOfMonth = date.getMonth().length(date.isLeapYear());
+        int remainingDays = lengthOfMonth - date.getDayOfMonth();
+        int perDayLimit = limit / lengthOfMonth;
+
+        if (remainingDays == 0) {
+            remainingDays = 1;
+        }
+
+        return perDayLimit * remainingDays;
     }
 
     @Override
@@ -164,11 +239,27 @@ public class SIMCardServiceImpl implements SIMCardService {
         SIMCard simCard = findById(id);
         Package pack = packageService.findById(request.getPackageId());
 
+        SIMCard saved = addPackage(simCard, pack);
+
+        return simCardMapper.mapToSIMCardView(saved);
+    }
+
+    @Override
+    public String addPackage(String username, String code) {
+        SIMCard simCard = findByUsername(username);
+        Package pack = packageService.findByCode(code);
+
+        addPackage(simCard, pack);
+
+        return String.format("Package - %s added successfully", pack.getName());
+    }
+
+    private SIMCard addPackage(SIMCard simCard, Package pack) {
         if (!simCard.getHasClient()) {
-            throw new EntityActionVetoException(String.format(noHolderById, id), null);
+            throw new EntityActionVetoException(String.format(noHolderById, simCard.getId()), null);
         }
         if (simCard.getBalance() < pack.getPrice()) {
-            throw new EntityActionVetoException(String.format(notEnoughBalanceById, id, pack.getPrice()), null);
+            throw new EntityActionVetoException(String.format(notEnoughBalanceById, simCard.getId(), pack.getPrice()), null);
         }
 
         TakenPackage takenPackage = new TakenPackage();
@@ -182,7 +273,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         simCard.setBalance(simCard.getBalance() - pack.getPrice());
         simCard.addTakenPackage(takenPackage);
 
-        return simCardMapper.mapToSIMCardView(save(simCard));
+        return save(simCard);
     }
 
     @Override
@@ -198,6 +289,13 @@ public class SIMCardServiceImpl implements SIMCardService {
     }
 
     @Override
+    public SIMCard findByUsername(String username) {
+        return simCardRepository.findByPassportClientUsername(username).orElseThrow(
+                () -> new EntityNotFoundException(String.format(notFoundByUsername, username))
+        );
+    }
+
+    @Override
     public void deleteById(Long id) {
         SIMCard simCard = findById(id);
         for (Service service : simCard.getServices()) {
@@ -206,20 +304,45 @@ public class SIMCardServiceImpl implements SIMCardService {
         simCardRepository.deleteById(id);
     }
 
-    private Double calcPriceForCurrentMonth(Double price) {
-        LocalDate date = LocalDate.now();
-        int lengthOfMonth = date.getMonth().length(date.isLeapYear());
-        int remainingDays = lengthOfMonth - date.getDayOfMonth();
-        double perDayPrice = price / lengthOfMonth;
-
-        return perDayPrice * remainingDays;
+    @Override
+    public String getBalance(String username) {
+        SIMCard simCard = findByUsername(username);
+        return simCard.getBalance() + " UZS";
     }
-    private Integer calcLimitForCurrentMonth(Integer limit) {
-        LocalDate date = LocalDate.now();
-        int lengthOfMonth = date.getMonth().length(date.isLeapYear());
-        int remainingDays = lengthOfMonth - date.getDayOfMonth();
-        int perDayLimit = limit / lengthOfMonth;
 
-        return perDayLimit * remainingDays;
+    @Override
+    public String getMinuteLimit(String username) {
+        SIMCard simCard = findByUsername(username);
+        Integer tariffLimit = simCard.getMinuteLimit();
+        Integer packageLimit = simCard.getTakenPackages().stream()
+                .filter(TakenPackage::isMinutePackage)
+                .map(TakenPackage::getAmount).reduce(0, Integer::sum);
+        return "tariff: " + tariffLimit + " minutes, package: " + packageLimit + " minutes";
+    }
+
+    @Override
+    public String getMBLimit(String username) {
+        SIMCard simCard = findByUsername(username);
+        Integer tariffLimit = simCard.getMbLimit();
+        Integer packageLimit = simCard.getTakenPackages().stream()
+                .filter(TakenPackage::isMBPackage)
+                .map(TakenPackage::getAmount).reduce(0, Integer::sum);
+        return "tariff: " + tariffLimit + " mb, package: " + packageLimit + " mb";
+    }
+
+    @Override
+    public String getSMSLimit(String username) {
+        SIMCard simCard = findByUsername(username);
+        Integer tariffLimit = simCard.getMbLimit();
+        Integer packageLimit = simCard.getTakenPackages().stream()
+                .filter(TakenPackage::isSMSPackage)
+                .map(TakenPackage::getAmount).reduce(0, Integer::sum);
+        return "tariff: " + tariffLimit + " sms, package: " + packageLimit + " sms";
+    }
+
+    @Override
+    public String getTariffName(String username) {
+        SIMCard simCard = findByUsername(username);
+        return simCard.getTariff().getName();
     }
 }

@@ -17,19 +17,39 @@ public interface SIMCardService {
 
     SIMCardView setTariff(SetTariffRequest request, Long id);
 
+    String setTariff(String username, String code);
+
     SIMCardView setPassport(SetPassportRequest request, Long id);
 
     SIMCardView addBalance(AddAmountRequest request, Long id);
 
+    String addBalance(AddAmountRequest request, String username);
+
     SIMCardView addService(AddServiceRequest request, Long id);
+
+    String addService(String username, String code);
 
     void removeService(Long simCardId, Long serviceId);
 
     SIMCardView addPackage(AddPackageRequest request, Long id);
 
+    String addPackage(String username, String code);
+
     SIMCard save(SIMCard simCard);
 
     SIMCard findById(Long id);
 
+    SIMCard findByUsername(String username);
+
     void deleteById(Long id);
+
+    String getBalance(String username);
+
+    String getMinuteLimit(String username);
+
+    String getMBLimit(String username);
+
+    String getSMSLimit(String username);
+
+    String getTariffName(String username);
 }

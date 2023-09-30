@@ -22,5 +22,9 @@ public interface ServiceService {
 
     Service findById(Long id);
 
+    Service findByUSSDCode(String code);
+
+    boolean existsByCode(String code);
+
     void deleteById(Long id);
 }

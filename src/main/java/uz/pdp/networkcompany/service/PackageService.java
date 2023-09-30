@@ -19,5 +19,9 @@ public interface PackageService {
 
     Package findById(Long id);
 
+    Package findByCode(String code);
+
+    boolean existsByCode(String code);
+
     void deleteById(Long id);
 }

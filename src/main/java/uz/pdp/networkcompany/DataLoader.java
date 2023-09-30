@@ -46,14 +46,14 @@ public class DataLoader implements CommandLineRunner {
         createClient(ClientType.PHYSICAL);
         createClient(ClientType.LEGAL);
         createTariff("Tariff 1", ClientType.PHYSICAL, 50_000D, 2000D,
-                500, 4096, 100, 80D, 80D, 80D);
+                500, 4096, 100, 80D, 80D, 80D, "*10*1#");
         createTariff("Tariff 2", ClientType.LEGAL, 30_000D, 2000D,
-                300, 2048, 80, 80D, 80D, 80D);
+                300, 2048, 80, 80D, 80D, 80D, "*10*2#");
         createCategory();
-        createService("Service 1", 1900D, ServiceType.DAILY);
-        createService("Service 2", 5600D, ServiceType.MONTHLY);
+        createService("Service 1", 1900D, ServiceType.DAILY, "*20*1#");
+        createService("Service 2", 5600D, ServiceType.MONTHLY, "*20*2#");
         createSIMCard();
-        createPackage("Package 1", 8000D, 512, PackageType.MB, DurationType.WEEK);
+        createPackage("Package 1", 8000D, 512, PackageType.MB, DurationType.WEEK, "*30*1#");
     }
 
     private void createEmployee(EmployeeType type) {
@@ -83,7 +83,7 @@ public class DataLoader implements CommandLineRunner {
 
     private void createTariff(String name, ClientType type, Double price, Double connectionPrice,
                               Integer minuteLimit, Integer mbLimit, Integer smsLimit,
-                              Double minutePrice, Double mbPrice, Double smsPrice) {
+                              Double minutePrice, Double mbPrice, Double smsPrice, String ussdCode) {
         Tariff tariff = new Tariff();
         tariff.setName(name);
         tariff.setType(type);
@@ -95,6 +95,9 @@ public class DataLoader implements CommandLineRunner {
         tariff.setPerMinutePrice(minutePrice);
         tariff.setPerMBPrice(mbPrice);
         tariff.setPerSMSPrice(smsPrice);
+        USSD ussd = new USSD();
+        ussd.setCode(ussdCode);
+        tariff.setUssd(ussd);
         tariffService.save(tariff);
     }
 
@@ -114,22 +117,28 @@ public class DataLoader implements CommandLineRunner {
         categoryService.save(category);
     }
 
-    private void createService(String name, Double price, ServiceType type) {
+    private void createService(String name, Double price, ServiceType type, String code) {
         Service service = new Service();
         service.setName(name);
         service.setPrice(price);
         service.setType(type);
         service.setCategory(categoryService.findById(1L));
+        USSD ussd = new USSD();
+        ussd.setCode(code);
+        service.setUssd(ussd);
         serviceService.save(service);
     }
 
-    private void createPackage(String name, Double price, Integer amount, PackageType type, DurationType durationType) {
+    private void createPackage(String name, Double price, Integer amount, PackageType type, DurationType durationType, String code) {
         Package pack = new Package();
         pack.setName(name);
         pack.setPrice(price);
         pack.setAmount(amount);
         pack.setType(type);
         pack.setDurationType(durationType);
+        USSD ussd = new USSD();
+        ussd.setCode(code);
+        pack.setUssd(ussd);
         packageService.save(pack);
     }
 }

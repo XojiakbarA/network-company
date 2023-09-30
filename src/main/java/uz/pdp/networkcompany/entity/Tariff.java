@@ -48,6 +48,9 @@ public class Tariff {
     @Column(nullable = false)
     private Double perSMSPrice;
 
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    private USSD ussd;
+
     @OneToMany(mappedBy = "tariff")
     private Set<SIMCard> simCards;
 

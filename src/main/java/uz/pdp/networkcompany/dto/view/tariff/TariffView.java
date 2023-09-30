@@ -18,4 +18,5 @@ public class TariffView {
     private Double perMinutePrice;
     private Double perMBPrice;
     private Double perSMSPrice;
+    private String ussdCode;
 }

@@ -35,6 +35,9 @@ public class Package {
     @Column(nullable = false)
     private Boolean leftover = false;
 
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    private USSD ussd;
+
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Tariff> tariffs = new HashSet<>();
 

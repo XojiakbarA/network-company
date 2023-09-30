@@ -8,5 +8,5 @@ import lombok.Data;
 public class AddAmountRequest {
     @NotNull(message = "amount must not be null")
     @Positive(message = "amout must be a positive")
-    private Float amount;
+    private Double amount;
 }

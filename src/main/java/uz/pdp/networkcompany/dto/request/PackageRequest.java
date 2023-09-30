@@ -2,6 +2,7 @@ package uz.pdp.networkcompany.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
@@ -36,4 +37,9 @@ public class PackageRequest {
     private String durationType;
 
     private Boolean leftover;
+
+    @NotNull(message = "ussd must not be null", groups = OnCreate.class)
+    @NotBlank(message = "ussd must not be blank", groups = OnCreate.class)
+    @Pattern(regexp = "^\\*[0-9]+([0-9*#])*#$", message = "ussd code must be ussd code")
+    private String ussdCode;
 }

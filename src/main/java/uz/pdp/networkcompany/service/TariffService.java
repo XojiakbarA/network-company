@@ -19,5 +19,9 @@ public interface TariffService {
 
     Tariff findById(Long id);
 
+    Tariff findByUSSDCode(String code);
+
+    boolean existsByCode(String code);
+
     void deleteById(Long id);
 }

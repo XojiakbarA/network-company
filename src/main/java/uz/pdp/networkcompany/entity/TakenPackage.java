@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import uz.pdp.networkcompany.enums.PackageType;
 
 import java.time.LocalDateTime;
 
@@ -32,4 +33,14 @@ public class TakenPackage {
 
     @Column(nullable = false)
     private Integer amount;
+
+    public Boolean isMinutePackage() {
+        return this.getPack().getType().equals(PackageType.MINUTE);
+    }
+    public Boolean isMBPackage() {
+        return this.getPack().getType().equals(PackageType.MB);
+    }
+    public Boolean isSMSPackage() {
+        return this.getPack().getType().equals(PackageType.SMS);
+    }
 }

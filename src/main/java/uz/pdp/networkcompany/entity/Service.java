@@ -27,6 +27,9 @@ public class Service {
     @Column(nullable = false)
     private Double price;
 
+    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    private USSD ussd;
+
     @ManyToOne
     private Category category;
 

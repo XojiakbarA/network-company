@@ -15,6 +15,7 @@ public class IsOwnNumberValidator implements ConstraintValidator<IsOwnNumber, Lo
 
     @Override
     public boolean isValid(Long aLong, ConstraintValidatorContext constraintValidatorContext) {
+        if (aLong == null) return false;
         return aLong.toString().startsWith(startCode);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import uz.pdp.networkcompany.dto.request.TariffRequest;
 import uz.pdp.networkcompany.dto.view.tariff.TariffView;
 import uz.pdp.networkcompany.entity.Tariff;
+import uz.pdp.networkcompany.entity.USSD;
 import uz.pdp.networkcompany.enums.ClientType;
 
 @Component
@@ -22,6 +23,7 @@ public class TariffMapper {
                 .perMinutePrice(tariff.getPerMinutePrice())
                 .perMBPrice(tariff.getPerMBPrice())
                 .perSMSPrice(tariff.getPerSMSPrice())
+                .ussdCode(tariff.getUssd().getCode())
                 .build();
     }
 
@@ -66,6 +68,17 @@ public class TariffMapper {
         }
         if (request.getPerMonthSMSLimit() != null) {
             tariff.setPerMonthSMSLimit(request.getPerMonthSMSLimit());
+        }
+        if (request.getUssdCode() != null && !request.getUssdCode().isBlank()) {
+            USSD ussd = new USSD();
+
+            if (tariff.getUssd() != null) {
+                ussd = tariff.getUssd();
+            }
+
+            ussd.setCode(request.getUssdCode());
+
+            tariff.setUssd(ussd);
         }
     }
 }
