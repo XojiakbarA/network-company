@@ -17,8 +17,7 @@ import uz.pdp.networkcompany.service.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 @org.springframework.stereotype.Service
 public class SIMCardServiceImpl implements SIMCardService {
@@ -280,6 +279,16 @@ public class SIMCardServiceImpl implements SIMCardService {
     public SIMCard save(SIMCard simCard) {
         return simCardRepository.save(simCard);
     }
+    
+    @Override
+    public List<SIMCard> findAll() {
+        return simCardRepository.findAll();
+    }
+
+    @Override
+    public List<SIMCard> findAllByServiceType(ServiceType serviceType) {
+        return simCardRepository.findAllByServicesType(serviceType);
+    }
 
     @Override
     public SIMCard findById(Long id) {
@@ -344,5 +353,36 @@ public class SIMCardServiceImpl implements SIMCardService {
     public String getTariffName(String username) {
         SIMCard simCard = findByUsername(username);
         return simCard.getTariff().getName();
+    }
+
+    @Override
+    public void payForTariff(SIMCard simCard) {
+        if (simCard.getTariff() != null) {
+            if (simCard.getBalance() < simCard.getTariff().getPrice()) {
+                simCard.setMinuteLimit(0);
+                simCard.setMbLimit(0);
+                simCard.setSmsLimit(0);
+                simCard.setActive(false);
+            } else {
+                simCard.setBalance(simCard.getBalance() - simCard.getTariff().getPrice());
+                simCard.setMinuteLimit(simCard.getTariff().getPerMonthMinuteLimit());
+                simCard.setMbLimit(simCard.getTariff().getPerMonthMBLimit());
+                simCard.setSmsLimit(simCard.getTariff().getPerMonthSMSLimit());
+                simCard.setActive(true);
+            }
+            save(simCard);
+        }
+    }
+
+    @Override
+    public void payForServices(SIMCard simCard) {
+        for (Service service : simCard.getServices()) {
+            if (simCard.getBalance() < service.getPrice()) {
+                simCard.removeService(service);
+                continue;
+            }
+            simCard.setBalance(simCard.getBalance() - service.getPrice());
+        }
+        save(simCard);
     }
 }

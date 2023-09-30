@@ -1,10 +1,13 @@
 package uz.pdp.networkcompany.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.entity.SIMCard;
+import uz.pdp.networkcompany.enums.ServiceType;
 
 public interface SIMCardService {
     Page<SIMCardView> getAll(Pageable pageable);
@@ -37,6 +40,10 @@ public interface SIMCardService {
 
     SIMCard save(SIMCard simCard);
 
+    List<SIMCard> findAll();
+
+    List<SIMCard> findAllByServiceType(ServiceType serviceType);
+
     SIMCard findById(Long id);
 
     SIMCard findByUsername(String username);
@@ -52,4 +59,8 @@ public interface SIMCardService {
     String getSMSLimit(String username);
 
     String getTariffName(String username);
+
+    void payForTariff(SIMCard simCard);
+
+    void payForServices(SIMCard simCard);
 }

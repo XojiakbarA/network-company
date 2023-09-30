@@ -14,7 +14,6 @@ import uz.pdp.networkcompany.enums.AuthorityType;
 import uz.pdp.networkcompany.security.JWTProvider;
 import uz.pdp.networkcompany.service.AuthService;
 
-import java.util.Arrays;
 import java.util.Map;
 
 @Service
