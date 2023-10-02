@@ -13,5 +13,6 @@ public interface SIMCardRepository extends JpaRepository<SIMCard, Long> {
     boolean existsByNumber(Long number);
     boolean existsByNumberAndIdNot(Long number, Long id);
     Optional<SIMCard> findByPassportClientUsername(String username);
+    Optional<SIMCard> findByNumber(Long number);
     List<SIMCard> findAllByServicesType(ServiceType serviceType);
 }

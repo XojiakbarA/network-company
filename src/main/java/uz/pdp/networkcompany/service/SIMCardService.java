@@ -48,6 +48,8 @@ public interface SIMCardService {
 
     SIMCard findByUsername(String username);
 
+    SIMCard findByNumber(Long number);
+
     void deleteById(Long id);
 
     String getBalance(String username);
@@ -63,4 +65,10 @@ public interface SIMCardService {
     void payForTariff(SIMCard simCard);
 
     void payForServices(SIMCard simCard);
+
+    void payForSms(String username);
+
+    Integer payForMinute(String username, Integer duration);
+
+    Integer payForMB(String username, Integer bytes);
 }

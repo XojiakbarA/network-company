@@ -5,13 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import uz.pdp.networkcompany.dto.request.AddAmountRequest;
-import uz.pdp.networkcompany.dto.request.LoginRequest;
+import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.response.AuthResponse;
 import uz.pdp.networkcompany.dto.response.Response;
-import uz.pdp.networkcompany.service.AuthService;
-import uz.pdp.networkcompany.service.SIMCardService;
-import uz.pdp.networkcompany.service.USSDRouteService;
+import uz.pdp.networkcompany.dto.view.mb.MBView;
+import uz.pdp.networkcompany.dto.view.minute.MinuteView;
+import uz.pdp.networkcompany.dto.view.sms.SMSView;
+import uz.pdp.networkcompany.service.*;
 
 import java.util.Map;
 
@@ -24,6 +24,12 @@ public class MainController {
     private USSDRouteService ussdRouteService;
     @Autowired
     private SIMCardService simCardService;
+    @Autowired
+    private SMSService smsService;
+    @Autowired
+    private MinuteService minuteService;
+    @Autowired
+    private MBService mbService;
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
@@ -47,5 +53,29 @@ public class MainController {
         String string = simCardService.addBalance(request, authentication.getName());
 
         return new Response(HttpStatus.OK.name(), string);
+    }
+
+    @PostMapping("/sms")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Response sms(@Valid @RequestBody SMSRequest request, Authentication authentication) {
+        SMSView sms = smsService.create(request, authentication.getName());
+
+        return new Response(HttpStatus.CREATED.name(), sms);
+    }
+
+    @PostMapping("/minute")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Response minute(@Valid @RequestBody MinuteRequest request, Authentication authentication) {
+        MinuteView minute = minuteService.create(request, authentication.getName());
+
+        return new Response(HttpStatus.CREATED.name(), minute);
+    }
+
+    @PostMapping("/mb")
+    @ResponseStatus(HttpStatus.CREATED)
+    public Response mb(@Valid @RequestBody MBRequest request, Authentication authentication) {
+        MBView mb = mbService.create(request, authentication.getName());
+
+        return new Response(HttpStatus.CREATED.name(), mb);
     }
 }

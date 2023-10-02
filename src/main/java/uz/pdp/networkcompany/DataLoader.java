@@ -52,8 +52,11 @@ public class DataLoader implements CommandLineRunner {
         createCategory();
         createService("Service 1", 1900D, ServiceType.DAILY, "*20*1#");
         createService("Service 2", 5600D, ServiceType.MONTHLY, "*20*2#");
-        createSIMCard();
+        createSIMCard(998951112233L, 10_000D, 1L, 1L);
+        createSIMCard(998953332211L, 5_000D, 2L, 1L);
         createPackage("Package 1", 8000D, 512, PackageType.MB, DurationType.WEEK, "*30*1#");
+        createPackage("Package 2", 3000D, 70, PackageType.SMS, DurationType.WEEK, "*30*2#");
+        createPackage("Package 3", 5000D, 100, PackageType.MINUTE, DurationType.WEEK, "*30*3#");
     }
 
     private void createEmployee(EmployeeType type) {
@@ -101,13 +104,14 @@ public class DataLoader implements CommandLineRunner {
         tariffService.save(tariff);
     }
 
-    private void createSIMCard() {
+    private void createSIMCard(Long number, Double balance, Long passportId, Long tariffId) {
         SIMCard simCard = new SIMCard();
-        simCard.setNumber(998951234567L);
-        simCard.setBalance(10_000D);
+        simCard.setNumber(number);
+        simCard.setBalance(balance);
         simCard.setActive(true);
-        simCard.setPassport(passportService.findById(1L));
-        simCard.setTariff(tariffService.findById(1L));
+        simCard.setPassport(passportService.findById(passportId));
+        simCard.setTariff(tariffService.findById(tariffId));
+        simCard.setMinuteLimit(2);
         simCardService.save(simCard);
     }
 

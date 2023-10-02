@@ -36,6 +36,7 @@ public class SIMCardServiceImpl implements SIMCardService {
     private final String existsByNumber = "SIMCard with number = %s already exists";
     private final String notFoundById = "SIMCard with id = %d not found";
     private final String notFoundByUsername = "SIMCard with username = %s not found";
+    private final String notFoundByNumber = "SIMCard with number = %d not found";
     private final String alreadyHasClient = "SIMCard with id = %d already has a client";
     private final String noHolderById = "SIMCard with id = %d no holder";
     private final String notEnoughBalanceById = "SIMCard with id = %d not enough balance. Required balance is %f";
@@ -305,6 +306,13 @@ public class SIMCardServiceImpl implements SIMCardService {
     }
 
     @Override
+    public SIMCard findByNumber(Long number) {
+        return simCardRepository.findByNumber(number).orElseThrow(
+                () -> new EntityNotFoundException(String.format(notFoundByNumber, number))
+        );
+    }
+
+    @Override
     public void deleteById(Long id) {
         SIMCard simCard = findById(id);
         for (Service service : simCard.getServices()) {
@@ -384,5 +392,140 @@ public class SIMCardServiceImpl implements SIMCardService {
             simCard.setBalance(simCard.getBalance() - service.getPrice());
         }
         save(simCard);
+    }
+
+    @Override
+    public void payForSms(String username) {
+        SIMCard simCard = findByUsername(username);
+        if (!simCard.getActive()) {
+            throw new EntityActionVetoException(String.format("SIMCard with id = %d is not active", simCard.getId()), null);
+        }
+        if (simCard.getSmsLimit() > 0) {
+            simCard.setSmsLimit(simCard.getSmsLimit() - 1);
+            save(simCard);
+            return;
+        }
+        List<TakenPackage> smsPackages = simCard.getTakenPackages().stream().filter(TakenPackage::isSMSPackage).toList();
+        for (TakenPackage smsPackage : smsPackages) {
+            if (smsPackage.getAmount() > 0) {
+                smsPackage.setAmount(smsPackage.getAmount() - 1);
+                save(simCard);
+                return;
+            }
+        }
+        if (simCard.getBalance() >= simCard.getTariff().getPerSMSPrice()) {
+            simCard.setBalance(simCard.getBalance() - simCard.getTariff().getPerSMSPrice());
+            save(simCard);
+            return;
+        }
+        throw new EntityActionVetoException(String.format("SIMCard with id = %d sms is not enough", simCard.getId()), null);
+    }
+
+    @Override
+    public Integer payForMinute(String username, Integer duration) {
+        Integer initDuration = duration;
+        SIMCard simCard = findByUsername(username);
+        if (!simCard.getActive()) {
+            throw new EntityActionVetoException(String.format("SIMCard with id = %d is not active", simCard.getId()), null);
+        }
+        Integer minuteLimit = simCard.getMinuteLimit();
+        if (minuteLimit >= duration) {
+            simCard.setMinuteLimit(minuteLimit - duration);
+            save(simCard);
+            return 0;
+        } else {
+            duration = duration - minuteLimit;
+            simCard.setMinuteLimit(0);
+        }
+        List<TakenPackage> minutePackages = simCard.getTakenPackages().stream().filter(TakenPackage::isMinutePackage).toList();
+        for (TakenPackage minutePackage : minutePackages) {
+            Integer amount = minutePackage.getAmount();
+            if (amount >= duration) {
+                minutePackage.setAmount(amount - duration);
+                save(simCard);
+                return 0;
+            } else {
+                duration = duration - amount;
+                minutePackage.setAmount(0);
+            }
+        }
+        if (duration <= 0) {
+            save(simCard);
+            return 0;
+        }
+
+        Double balance = simCard.getBalance();
+        Double perMinutePrice = simCard.getTariff().getPerMinutePrice();
+
+        if (balance >= (perMinutePrice * duration)) {
+            simCard.setBalance(balance - (perMinutePrice * duration));
+            save(simCard);
+            return 0;
+        }
+
+        simCard.setBalance(balance % perMinutePrice);
+
+        duration = duration - (int) (balance / perMinutePrice);
+
+        if (initDuration.equals(duration)) {
+            throw new EntityActionVetoException(String.format("SIMCard with id = %d minute is not enough", simCard.getId()), null);
+        }
+
+        save(simCard);
+        return duration;
+    }
+
+    @Override
+    public Integer payForMB(String username, Integer bytes) {
+        Integer initBytes = bytes;
+        SIMCard simCard = findByUsername(username);
+        if (!simCard.getActive()) {
+            throw new EntityActionVetoException(String.format("SIMCard with id = %d is not active", simCard.getId()), null);
+        }
+        Integer mbLimit = simCard.getMbLimit();
+        if (mbLimit >= bytes) {
+            simCard.setMbLimit(mbLimit - bytes);
+            save(simCard);
+            return 0;
+        } else {
+            bytes = bytes - mbLimit;
+            simCard.setMbLimit(0);
+        }
+        List<TakenPackage> mbPackages = simCard.getTakenPackages().stream().filter(TakenPackage::isMBPackage).toList();
+        for (TakenPackage mbPackage : mbPackages) {
+            Integer amount = mbPackage.getAmount();
+            if (amount >= bytes) {
+                mbPackage.setAmount(amount - bytes);
+                save(simCard);
+                return 0;
+            } else {
+                bytes = bytes - amount;
+                mbPackage.setAmount(0);
+            }
+        }
+        if (bytes <= 0) {
+            save(simCard);
+            return 0;
+        }
+
+        Double balance = simCard.getBalance();
+        Double perMBPrice = simCard.getTariff().getPerMBPrice();
+
+        if (balance >= (perMBPrice * bytes)) {
+            simCard.setBalance(balance - (perMBPrice * bytes));
+            save(simCard);
+            return 0;
+        }
+
+        simCard.setBalance(balance % perMBPrice);
+
+        bytes = bytes - (int) (balance / perMBPrice);
+
+        if (initBytes.equals(bytes)) {
+            throw new EntityActionVetoException(String.format("SIMCard with id = %d mb is not enough", simCard.getId()), null);
+        }
+
+        save(simCard);
+        return bytes;
     }
 }
