@@ -6,10 +6,12 @@ import org.hibernate.action.internal.EntityActionVetoException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.transaction.annotation.Transactional;
 import uz.pdp.networkcompany.dto.request.*;
 import uz.pdp.networkcompany.dto.view.simCard.SIMCardView;
 import uz.pdp.networkcompany.entity.*;
 import uz.pdp.networkcompany.entity.Package;
+import uz.pdp.networkcompany.enums.PaymentType;
 import uz.pdp.networkcompany.enums.ServiceType;
 import uz.pdp.networkcompany.mapper.SIMCardMapper;
 import uz.pdp.networkcompany.repository.SIMCardRepository;
@@ -31,6 +33,8 @@ public class SIMCardServiceImpl implements SIMCardService {
     private ServiceService serviceService;
     @Autowired
     private PackageService packageService;
+    @Autowired
+    private PaymentService paymentService;
     @Autowired
     private SIMCardMapper simCardMapper;
     private final String existsByNumber = "SIMCard with number = %s already exists";
@@ -80,6 +84,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCardMapper.mapToSIMCardView(save(simCard));
     }
 
+    @Transactional
     @Override
     public SIMCardView setTariff(SetTariffRequest request, Long id) {
         SIMCard simCard = findById(id);
@@ -90,6 +95,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCardMapper.mapToSIMCardView(saved);
     }
 
+    @Transactional
     @Override
     public String setTariff(String username, String code) {
         SIMCard simCard = findByUsername(username);
@@ -119,6 +125,8 @@ public class SIMCardServiceImpl implements SIMCardService {
         simCard.setActive(true);
         simCard.setTariff(tariff);
 
+        paymentService.create(priceWithConnection, simCard, PaymentType.TARIFF);
+
         return save(simCard);
     }
 
@@ -137,6 +145,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCardMapper.mapToSIMCardView(save(simCard));
     }
 
+    @Transactional
     @Override
     public SIMCardView addBalance(AddAmountRequest request, Long id) {
         SIMCard simCard = findById(id);
@@ -146,6 +155,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCardMapper.mapToSIMCardView(saved);
     }
 
+    @Transactional
     @Override
     public String addBalance(AddAmountRequest request, String username) {
         SIMCard simCard = findByUsername(username);
@@ -158,9 +168,12 @@ public class SIMCardServiceImpl implements SIMCardService {
     private SIMCard addBalance(SIMCard simCard, Double amount) {
         simCard.setBalance(simCard.getBalance() + amount);
 
+        paymentService.create(amount, simCard, PaymentType.BALANCE);
+
         return save(simCard);
     }
 
+    @Transactional
     @Override
     public SIMCardView addService(AddServiceRequest request, Long id) {
         SIMCard simCard = findById(id);
@@ -171,6 +184,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCardMapper.mapToSIMCardView(saved);
     }
 
+    @Transactional
     @Override
     public String addService(String username, String code) {
         SIMCard simCard = findByUsername(username);
@@ -195,6 +209,8 @@ public class SIMCardServiceImpl implements SIMCardService {
 
         simCard.setBalance(simCard.getBalance() - price);
         simCard.addService(service);
+
+        paymentService.create(price, simCard, PaymentType.SERVICE);
 
         return save(simCard);
     }
@@ -234,6 +250,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         save(simCard);
     }
 
+    @Transactional
     @Override
     public SIMCardView addPackage(AddPackageRequest request, Long id) {
         SIMCard simCard = findById(id);
@@ -244,6 +261,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCardMapper.mapToSIMCardView(saved);
     }
 
+    @Transactional
     @Override
     public String addPackage(String username, String code) {
         SIMCard simCard = findByUsername(username);
@@ -272,6 +290,8 @@ public class SIMCardServiceImpl implements SIMCardService {
 
         simCard.setBalance(simCard.getBalance() - pack.getPrice());
         simCard.addTakenPackage(takenPackage);
+
+        paymentService.create(pack.getPrice(), simCard, PaymentType.PACKAGE);
 
         return save(simCard);
     }
@@ -363,6 +383,7 @@ public class SIMCardServiceImpl implements SIMCardService {
         return simCard.getTariff().getName();
     }
 
+    @Transactional
     @Override
     public void payForTariff(SIMCard simCard) {
         if (simCard.getTariff() != null) {
@@ -377,11 +398,13 @@ public class SIMCardServiceImpl implements SIMCardService {
                 simCard.setMbLimit(simCard.getTariff().getPerMonthMBLimit());
                 simCard.setSmsLimit(simCard.getTariff().getPerMonthSMSLimit());
                 simCard.setActive(true);
+                paymentService.create(simCard.getTariff().getPrice(), simCard, PaymentType.TARIFF);
             }
             save(simCard);
         }
     }
 
+    @Transactional
     @Override
     public void payForServices(SIMCard simCard) {
         for (Service service : simCard.getServices()) {
@@ -390,6 +413,7 @@ public class SIMCardServiceImpl implements SIMCardService {
                 continue;
             }
             simCard.setBalance(simCard.getBalance() - service.getPrice());
+            paymentService.create(service.getPrice(), simCard, PaymentType.SERVICE);
         }
         save(simCard);
     }
